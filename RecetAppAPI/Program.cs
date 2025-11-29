@@ -1,90 +1,128 @@
-using RecetAppAPI.Models;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
-using RecetAppAPI.Data;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Sql;
+using RecetAppAPI.Data;
+using RecetAppAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// JSON
 builder.Services.ConfigureHttpJsonOptions(opts =>
 {
     opts.SerializerOptions.PropertyNamingPolicy = null;
     opts.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
 });
 
+// DbContext
 builder.Services.AddDbContext<RecetAppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
+// ==== SWAGGER ====
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+// ==================
 
 var app = builder.Build();
 
-//Intercepta las peticiones antes de llegar a los endpoints
+// Activar Swagger solo en Development
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseHttpsRedirection();
 
-//
-List<Usuario> users = new List<Usuario>
+// Lista en memoria
+List<Usuario> users = new()
 {
-    new Usuario ("Luis","luis123@gmail.com","1234"),
-    new Usuario ("Jose","jose123@gmail.com","1234"),
-    new Usuario ("Juan","juan123@gmail.com","1234")
+    new Usuario
+    {
+        UsuarioId = 1,
+        UsuarioNombre = "Luis",
+        UsuarioCorreo = "luis123@gmail.com",
+        UsuarioContraseña = "1234"
+    },
+    new Usuario
+    {
+        UsuarioId = 2,
+        UsuarioNombre = "Jose",
+        UsuarioCorreo = "jose123@gmail.com",
+        UsuarioContraseña = "1234"
+    },
+    new Usuario
+    {
+        UsuarioId = 3,
+        UsuarioNombre = "Juan",
+        UsuarioCorreo = "juan123@gmail.com",
+        UsuarioContraseña = "1234"
+    }
 };
-int NextId() => (users.Count == 0) ? 1 : users.Max(t => t.UsuarioId) + 1;
 
-//EndPoints
+int NextId() => users.Count == 0 ? 1 : users.Max(t => t.UsuarioId) + 1;
 
+// GET /api/users
 app.MapGet("/api/users", () =>
 {
     return Results.Ok(users);
 });
 
-app.MapPost("/api/users",(Usuario input) =>
+// POST /api/users
+app.MapPost("/api/users", (Usuario input) =>
 {
     if (!ValidarUser(input))
-        return Results.BadRequest(new {message = "Llene los campos requeridos"});
-    else
+        return Results.BadRequest(new { message = "Llene los campos requeridos" });
+
+    var nuevo = new Usuario
     {
-        Usuario nuevo = new Usuario(NextId(),input.UsuarioNombre,input.UsuarioCorreo,input.UsuarioContraseña);
-        users.Add(nuevo);
-        return Results.Created($"/api/todos/{nuevo.UsuarioId}", users);
-    }
+        UsuarioId = NextId(),
+        UsuarioNombre = input.UsuarioNombre,
+        UsuarioCorreo = input.UsuarioCorreo,
+        UsuarioContraseña = input.UsuarioContraseña
+    };
+
+    users.Add(nuevo);
+    return Results.Created($"/api/users/{nuevo.UsuarioId}", nuevo);
 });
 
-app.MapPut("/api/users/{ID:int}", (int ID,Usuario input) =>
+// PUT /api/users/{ID}
+app.MapPut("/api/users/{ID:int}", (int ID, Usuario input) =>
 {
-    if (BuscarUsuarioID(ID))
-    {
-        var edit = users.FirstOrDefault(t=>t.UsuarioId == ID);
-        if(edit != null)
-        {
-            if (ValidarUser(input))
-            {
-                edit.UsuarioNombre = input.UsuarioNombre;
-                edit.UsuarioCorreo = input.UsuarioCorreo;
-                edit.UsuarioContraseña = input.UsuarioContraseña;
-                return Results.NoContent();
-            }
-            return Results.BadRequest(new { message = "Llene los campos requeridos" });
-        }
-    }
-    return Results.NotFound();
-});
-
-app.MapDelete("/api/users{id:int}", (int ID) =>
-{
-    if (BuscarUsuarioID(ID))
-    {
-        users.Remove(ObtenerUsuarioID(ID));
-        return Results.Ok();
-    }
-    else
+    var edit = users.FirstOrDefault(t => t.UsuarioId == ID);
+    if (edit == null)
         return Results.NotFound();
+
+    if (!ValidarUser(input))
+        return Results.BadRequest(new { message = "Llene los campos requeridos" });
+
+    edit.UsuarioNombre = input.UsuarioNombre;
+    edit.UsuarioCorreo = input.UsuarioCorreo;
+    edit.UsuarioContraseña = input.UsuarioContraseña;
+
+    return Results.NoContent();
+});
+
+// DELETE /api/users/{ID}
+app.MapDelete("/api/users/{ID:int}", (int ID) =>
+{
+    var user = ObtenerUsuarioID(ID);
+    if (user == null)
+        return Results.NotFound();
+
+    users.Remove(user);
+    return Results.Ok();
 });
 
 app.Run();
 
+// Helpers
+
 bool BuscarUsuarioID(int ID)
 {
-    foreach(var user in users)
+    foreach (var user in users)
     {
         if (user.UsuarioId == ID)
             return true;
@@ -92,7 +130,7 @@ bool BuscarUsuarioID(int ID)
     return false;
 }
 
-Usuario ObtenerUsuarioID(int ID)
+Usuario? ObtenerUsuarioID(int ID)
 {
     foreach (var user in users)
     {
@@ -114,4 +152,3 @@ bool ValidarUser(Usuario input)
 
     return valido;
 }
-
