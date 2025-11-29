@@ -1,5 +1,7 @@
 using RecetAppAPI.Models;
 using System.Text.Json.Serialization;
+using RecetAppAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,7 @@ builder.Services.ConfigureHttpJsonOptions(opts =>
     opts.SerializerOptions.PropertyNamingPolicy = null;
     opts.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
 });
+
 
 var app = builder.Build();
 

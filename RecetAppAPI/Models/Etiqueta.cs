@@ -1,17 +1,22 @@
-﻿namespace RecetAppAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RecetAppAPI.Models
 {
     public class Etiqueta
     {
-        int etiquetaId;
-        string etiquetaNombre;
-
-        public Etiqueta(int etiquetaId, string etiquetaNombre)
+        public Etiqueta(string etiquetaNombre) : this()
         {
-            this.etiquetaId = etiquetaId;
-            this.etiquetaNombre = etiquetaNombre;
+            EtiquetaNombre = etiquetaNombre;
         }
-
-        public int EtiquetaId { get => etiquetaId; set => etiquetaId = value; }
-        public string EtiquetaNombre { get => etiquetaNombre; set => etiquetaNombre = value; }
+        public Etiqueta()
+        {
+            RecetaEtiquetas = new List<RecetaEtiqueta>();
+        }
+        [Key]
+        public int EtiquetaId { get; set; }
+        [Required]
+        public string EtiquetaNombre { get; set; }
+        //Relacion N:M
+        public List<RecetaEtiqueta> RecetaEtiquetas { get; set; } 
     }
 }

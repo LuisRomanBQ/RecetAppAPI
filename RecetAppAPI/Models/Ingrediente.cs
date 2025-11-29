@@ -1,29 +1,39 @@
-﻿namespace RecetAppAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RecetAppAPI.Models
 {
     public class Ingrediente
     {
-        int ingredienteId;
-        string ingredienteNombre;
-        double ingredienteCantidad;
-        string ingredienteUnidad;
-        bool ingredienteOpcional;
-        Ingrediente ingredienteSustituto;
-
-        public Ingrediente(int ingredienteId, string ingredienteNombre, double ingredienteCantidad, string ingredienteUnidad, bool ingredienteOpcional, Ingrediente ingredienteSustituto)
+        public Ingrediente(string ingredienteNombre, double ingredienteCantidad, string ingredienteUnidad) : this()
         {
-            this.ingredienteId = ingredienteId;
-            this.ingredienteNombre = ingredienteNombre;
-            this.ingredienteCantidad = ingredienteCantidad;
-            this.ingredienteUnidad = ingredienteUnidad;
-            this.ingredienteOpcional = ingredienteOpcional;
-            this.ingredienteSustituto = ingredienteSustituto;
+            IngredienteNombre = ingredienteNombre;
+            IngredienteCantidad = ingredienteCantidad;
+            IngredienteUnidad = ingredienteUnidad;
+            IngredienteOpcional = false;
+            IngredienteSustituto = null;
+        }
+        public Ingrediente()
+        {
+            RecetaIngredientes = new List<RecetaIngrediente>();
         }
 
-        public int IngredienteId { get => ingredienteId; set => ingredienteId = value; }
-        public string IngredienteNombre { get => ingredienteNombre; set => ingredienteNombre = value; }
-        public double IngredienteCantidad { get => ingredienteCantidad; set => ingredienteCantidad = value; }
-        public string IngredienteUnidad { get => ingredienteUnidad; set => ingredienteUnidad = value; }
-        public bool IngredienteOpcional { get => ingredienteOpcional; set => ingredienteOpcional = value; }
-        public Ingrediente IngredienteSustituto { get => ingredienteSustituto; set => ingredienteSustituto = value; }
+        [Key]
+        public int IngredienteId { get; set; }
+        [Required]
+        public string IngredienteNombre { get; set; }
+        [Required]
+        public double IngredienteCantidad { get; set; }
+        [Required]
+        public string IngredienteUnidad { get; set; }
+        public bool? IngredienteOpcional { get; set; } = false;
+        [ForeignKey("IngredienteSustituto")]
+        public int? IngredienteSustitutoId { get; set; }
+        public Ingrediente? IngredienteSustituto { get; set; } = null;
+
+        public List<RecetaIngrediente> RecetaIngredientes { get; set; }
+
+
+
     }
 }

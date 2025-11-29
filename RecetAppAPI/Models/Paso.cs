@@ -1,20 +1,30 @@
-﻿namespace RecetAppAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RecetAppAPI.Models
 {
     public class Paso
     {
-        int pasoId;
-        int pasoNum;
-        string pasoDescripcion;
-
-        public Paso(int pasoId, int pasoNum, string pasoDescripcion)
+        public Paso(int pasoOrden, string pasoDescripcion) : this()
         {
-            this.pasoId = pasoId;
-            this.pasoNum = pasoNum;
-            this.pasoDescripcion = pasoDescripcion;
+            PasoOrden = pasoOrden;
+            PasoDescripcion = pasoDescripcion;
         }
+        public Paso()
+        {
 
-        public int PasoId { get => pasoId; set => pasoId = value; }
-        public int PasoNum { get => pasoNum; set => pasoNum = value; }
-        public string PasoDescripcion { get => pasoDescripcion; set => pasoDescripcion = value; }
+        }
+        [Key]
+        public int PasoId { get; set; }
+        [Required]
+        public int PasoOrden { get; set; }
+        [Required]
+        public string PasoDescripcion { get; set; }
+
+        // FK Hacia Receta
+        [ForeignKey("Receta")]
+        public int RecetaId { get; set; }
+        public Receta Receta { get; set; }
+
     }
 }

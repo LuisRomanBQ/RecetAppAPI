@@ -1,20 +1,31 @@
-﻿namespace RecetAppAPI.Models
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RecetAppAPI.Models
 {
     public class Comentario
     {
-        int comentarioId;
-        string comentarioContenido;
-        DateTime comentarioFecha;
-
-        public Comentario(int comentarioId, string comentarioContenido, DateTime comentarioFecha)
+        public Comentario(string comentarioContenido) : this()
         {
-            this.comentarioId = comentarioId;
-            this.comentarioContenido = comentarioContenido;
-            this.comentarioFecha = comentarioFecha;
+            ComentarioContenido = comentarioContenido;
         }
+        public Comentario()
+        {
+            ComentarioFecha = DateTime.Now;
+        }
+        [Key]
+        public int ComentarioId { get; set; }
+        [Required]
+        public string ComentarioContenido { get; set; }
+        public DateTime ComentarioFecha { get; set; }
 
-        public int ComentarioId { get => comentarioId; set => comentarioId = value; }
-        public string ComentarioContenido { get => comentarioContenido; set => comentarioContenido = value; }
-        public DateTime ComentarioFecha { get => comentarioFecha; set => comentarioFecha = value; }
+        // FK Hacia Usuario
+        public int UsuarioId { get; set; }
+        public Usuario Usuario { get; set; }
+        //FK Hacia Receta
+        public int RecetaId { get; set; }
+        public Receta Receta { get; set; }
+
     }
 }

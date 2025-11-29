@@ -1,25 +1,36 @@
-﻿namespace RecetAppAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RecetAppAPI.Models
 {
     public class Usuario
     {
-        int usuarioId;
-        string usuarioNombre;
-        string usuarioCorreo;
-        string usuarioContraseña;
-        string usuarioBiografia;
-
-        public int UsuarioId { get => usuarioId; set => usuarioId = value; }
-        public string UsuarioNombre { get => usuarioNombre; set => usuarioNombre = value; }
-        public string UsuarioCorreo { get => usuarioCorreo; set => usuarioCorreo = value; }
-        public string UsuarioContraseña { get => usuarioContraseña; set => usuarioContraseña = value; }
-        public string UsuarioBiografia { get => usuarioBiografia; set => usuarioBiografia = value; }
-
-        public Usuario(int usuarioId, string usuarioNombre, string usuarioCorreo, string usuarioContraseña)
+        public Usuario(string usuarioNombre, string usuarioCorreo, string usuarioContraseña, string? usuarioBiografia) : this()
         {
-            this.usuarioId = usuarioId;
-            this.usuarioNombre = usuarioNombre;
-            this.usuarioCorreo = usuarioCorreo;
-            this.usuarioContraseña = usuarioContraseña;
+            UsuarioNombre = usuarioNombre;
+            UsuarioCorreo = usuarioCorreo;
+            UsuarioContraseña = usuarioContraseña;
+            UsuarioBiografia = usuarioBiografia;
         }
+        public Usuario()
+        {
+            RecetasPublicadas = new List<Receta>();
+            Comentarios = new List<Comentario>();
+            RecetasRealizadas = new List<Receta>();
+        }
+
+        [Key]
+        public int UsuarioId { get; set; }
+        [Required]
+        public string UsuarioNombre { get; set; }
+        [Required]
+        public string UsuarioCorreo { get; set; }
+        [Required]
+        public string UsuarioContraseña { get; set; }
+        public string? UsuarioBiografia { get; set; } = "";
+
+        public List<Receta> RecetasPublicadas { get; set; }
+        public List<Comentario> Comentarios { get; set; }
+        public List<Receta> RecetasRealizadas { get; set; }
+
     }
 }
