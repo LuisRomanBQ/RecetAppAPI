@@ -4,18 +4,18 @@ namespace RecetAppAPI.Models
 {
     public class Usuario
     {
-        public Usuario(string usuarioNombre, string usuarioCorreo, string usuarioContraseña, string? usuarioBiografia) : this()
+        public Usuario(string usuarioNombre, string usuarioCorreo, string usuarioContraseña) : this()
         {
             UsuarioNombre = usuarioNombre;
             UsuarioCorreo = usuarioCorreo;
             UsuarioContraseña = usuarioContraseña;
-            UsuarioBiografia = usuarioBiografia;
         }
         public Usuario()
         {
             RecetasPublicadas = new List<Receta>();
             Comentarios = new List<Comentario>();
             RecetasRealizadas = new List<Receta>();
+            UsuarioBiografia = "";
         }
 
         [Key]

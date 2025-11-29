@@ -2,6 +2,7 @@ using RecetAppAPI.Models;
 using System.Text.Json.Serialization;
 using RecetAppAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Sql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.ConfigureHttpJsonOptions(opts =>
     opts.SerializerOptions.PropertyNamingPolicy = null;
     opts.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
 });
+
+builder.Services.AddDbContext<RecetAppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 var app = builder.Build();
@@ -20,9 +24,9 @@ app.UseHttpsRedirection();
 //
 List<Usuario> users = new List<Usuario>
 {
-    new Usuario (1,"Luis","luis123@gmail.com","1234"),
-    new Usuario (2,"Jose","jose123@gmail.com","1234"),
-    new Usuario (3,"Juan","juan123@gmail.com","1234")
+    new Usuario ("Luis","luis123@gmail.com","1234"),
+    new Usuario ("Jose","jose123@gmail.com","1234"),
+    new Usuario ("Juan","juan123@gmail.com","1234")
 };
 int NextId() => (users.Count == 0) ? 1 : users.Max(t => t.UsuarioId) + 1;
 
